@@ -58,7 +58,7 @@ void VPLog(NSString *format, ...) {
     if (self) {
         // TODO: load stuff from userdefaults
         [self updateOption:@"VapourEnabled" withDefault:@YES];
-        [self updateOption:@"VapourOpacity" withDefault:@0.975];
+        [self updateOption:@"VapourOpacity" withDefault:@0.9];
         [self updateOption:@"VapourOverrideColours" withDefault:@NO];
         [self updateOption:@"VapourDebug" withDefault:@NO];
 
