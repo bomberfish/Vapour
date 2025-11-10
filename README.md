@@ -3,6 +3,10 @@
 An opinionated window transparency tweak for macOS.
 Requires the [ammonia](https://github.com/CoreBedtime/ammonia) tweak runtime.
 
+## Disclaimer
+
+Vapour is still very much a work in progress. I am not responsible for bricked Macs, dead NAND chips, thermonuclear war, or you getting fired because the Finder failed. Please do some research if you have any concerns about features included in this tweak before installing it! YOU are choosing to make these modifications, and if you point the finger at me for messing up your device, I will laugh at you.
+
 ## Installation
 
 ```
