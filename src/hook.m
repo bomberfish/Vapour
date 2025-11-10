@@ -86,19 +86,19 @@ void OnWindowOpened(NSWindow *window) {
         // the code formatting of doom and despair 
         if (
                 [[TweakOptions sharedInstance] VapourOverrideColours] 
+                && 
+                (
+                    [window backgroundColor] == nil ||
+                    [[window backgroundColor] alphaComponent] == 1.0
+                )
                 && (
-                    (
-                        [window backgroundColor] == nil ||
-                        [[window backgroundColor] alphaComponent] == 1.0
-                    )
-                    || (
-                        [window level] != kCGTornOffMenuWindowLevel &&
-                        [window level] != kCGScreenSaverWindowLevelKey &&
-                        [window level] != kCGModalPanelWindowLevel &&
-                        [window level] != kCGDesktopIconWindowLevel &&
-                        [window level] != kCGMinimumWindowLevel &&
-                        [window level] != kCGStatusWindowLevel
-                    )
+                    [window level] != kCGTornOffMenuWindowLevel &&
+                    [window level] != kCGScreenSaverWindowLevel &&
+                    [window level] != kCGModalPanelWindowLevel &&
+                    [window level] != kCGDesktopIconWindowLevel &&
+                    [window level] != kCGMinimumWindowLevel &&
+                    [window level] != kCGStatusWindowLevel &&
+                    [window level] != kCGDockWindowLevel
                 )
             ) {
             VPLog(@"Overriding window background color on opened window");
