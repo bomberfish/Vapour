@@ -9,7 +9,7 @@ Vapour is still very much a work in progress. I am not responsible for bricked M
 
 ## Installation
 
-```
+```bash
 make
 sudo make install
 ```
