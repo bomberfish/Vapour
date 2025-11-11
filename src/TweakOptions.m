@@ -24,6 +24,9 @@
     if ([key isEqualToString:@"VapourOpacity"]) {
         CGFloat val = MAX([value floatValue], 0.01);
         [self setValue:@(val) forKey:key];
+    } else if ([key isEqualToString:@"VapourBlur"]) {
+        CGFloat val = MAX([value floatValue], 0.0);
+        [self setValue:@(val) forKey:key];
     } else {
         BOOL val = [value boolValue];
         [self setValue:@(val) forKey:key];
@@ -35,6 +38,7 @@
         // TODO: load stuff from userdefaults
         [self updateOption:@"VapourEnabled" withDefault:@YES];
         [self updateOption:@"VapourOpacity" withDefault:@0.9];
+        [self updateOption:@"VapourBlur" withDefault:@0.0];
         [self updateOption:@"VapourOverrideColours" withDefault:@NO];
         [self updateOption:@"VapourDebug" withDefault:@NO];
 
