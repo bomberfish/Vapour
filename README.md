@@ -28,3 +28,5 @@ defaults write com.example.MyApp VapourEnabled -bool true
 - `VapourOpacity` (float, default: 0.97): Set the opacity level for windows.
 - `VapourOverrideColours` (boolean, default: false): Enable or disable color overrides. Currently only works for dark mode.
 <!-- - `VapourDisableBorder` (boolean, default: true): Enable or disable window borders. -->
+
+Alternatively, you can build and use the Vapour Tweak Tool GUI application included in this repository to manage settings visually.
