@@ -17,14 +17,8 @@ all: build/libVapour.dylib
 build:
 	mkdir -p build
 
-build/main.o: src/main.m | build
-	$(CC) $(CFLAGS) -c src/main.m -o build/main.o
-
-build/hook.o: src/hook.m | build
-	$(CC) $(CFLAGS) -c src/hook.m -o build/hook.o
-
-build/ZKSwizzle.o: src/ZKSwizzle.m | build
-	$(CC) $(CFLAGS) -c src/ZKSwizzle.m -o build/ZKSwizzle.o
+build/%.o: src/%.m | build
+	$(CC) $(CFLAGS) -c $< -o $@
 
 build/libVapour.dylib: build/hook.o build/main.o build/ZKSwizzle.o
 	$(CC) \
