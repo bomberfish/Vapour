@@ -191,3 +191,6 @@ ContextStoreAgent
 com.apple.hiservices-xpcservice
 talagent
 WindowServer
+qbittorrent
+qBittorrent
+org.qbittorrent.qBittorrent
