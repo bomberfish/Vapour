@@ -25,7 +25,7 @@
         CGFloat val = MAX([value floatValue], 0.01);
         [self setValue:@(val) forKey:key];
     } else if ([key isEqualToString:@"VapourBlur"]) {
-        CGFloat val = MAX([value floatValue], 0.0);
+        uint32_t val = MAX([value unsignedIntValue], 0);
         [self setValue:@(val) forKey:key];
     } else {
         BOOL val = [value boolValue];

@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var currentDomain: String = UserDefaults.globalDomain
     @State private var enabled: Bool = false
     @State private var opacity: Double = 1.0
-    @State private var blur: Double = 0.0
+    @State private var blur: Double = 0
     @State private var overrideColours: Bool = false
     @State private var debug: Bool = false
     var body: some View {
@@ -56,14 +56,15 @@ struct ContentView: View {
                         }
                 }
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Blur: \(blur, specifier: "%.2f")")
-                    Slider(value: $blur, in: 0...100)
+                    Text("Blur: \(Int(blur))")
+                    Slider(value: $blur, in: 0...100, step: 1)
                         .onChange(of: blur) {_ in
+                            let blurValue = UInt32(blur)
                             if currentDomain == UserDefaults.globalDomain {
-                                CFPreferencesSetAppValue("VapourBlur" as CFString, blur as CFPropertyList?, kCFPreferencesAnyApplication)
+                                CFPreferencesSetAppValue("VapourBlur" as CFString, blurValue as CFPropertyList?, kCFPreferencesAnyApplication)
                                 CFPreferencesAppSynchronize(kCFPreferencesAnyApplication)
                             } else {
-                                UserDefaults(suiteName: currentDomain)?.set(blur, forKey: "VapourBlur")
+                                UserDefaults(suiteName: currentDomain)?.set(blurValue, forKey: "VapourBlur")
                             }
                         }
                 }
@@ -115,14 +116,14 @@ struct ContentView: View {
         if currentDomain == UserDefaults.globalDomain {
             enabled = (CFPreferencesCopyAppValue("VapourEnabled" as CFString, kCFPreferencesAnyApplication) as? Bool) ?? true
             opacity = (CFPreferencesCopyAppValue("VapourOpacity" as CFString, kCFPreferencesAnyApplication) as? Double) ?? 0.9
-            blur = (CFPreferencesCopyAppValue("VapourBlur" as CFString, kCFPreferencesAnyApplication) as? Double) ?? 0.0
+            blur = Double((CFPreferencesCopyAppValue("VapourBlur" as CFString, kCFPreferencesAnyApplication) as? UInt32) ?? 0)
             overrideColours = (CFPreferencesCopyAppValue("VapourOverrideColours" as CFString, kCFPreferencesAnyApplication) as? Bool) ?? false
             debug = (CFPreferencesCopyAppValue("VapourDebug" as CFString, kCFPreferencesAnyApplication) as? Bool) ?? false
         } else {
             let defaults = UserDefaults.standard.persistentDomain(forName: currentDomain) ?? [:]
             enabled = defaults["VapourEnabled"] as? Bool ?? true
             opacity = defaults["VapourOpacity"] as? Double ?? 0.9
-            blur = defaults["VapourBlur"] as? Double ?? 0.0
+            blur = Double((defaults["VapourBlur"] as? UInt32) ?? 0)
             overrideColours = defaults["VapourOverrideColours"] as? Bool ?? false
             debug = defaults["VapourDebug"] as? Bool ?? false
         }

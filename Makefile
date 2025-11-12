@@ -8,7 +8,9 @@ LDFLAGS = -framework Foundation \
 				-framework Cocoa \
 				-framework QuartzCore \
 				-framework CoreGraphics \
-				-framework CoreFoundation\
+				-framework CoreFoundation \
+				-framework ApplicationServices \
+				-framework SkyLight \
     			-F$(SDKROOT)/System/Library/Frameworks \
 				-F$(SDKROOT)/System/Library/PrivateFrameworks
 
@@ -20,11 +22,14 @@ build:
 build/%.o: src/%.m | build
 	$(CC) $(CFLAGS) -c $< -o $@
 
-build/libVapour.dylib: build/hook.o build/main.o build/ZKSwizzle.o
+SRCS = $(wildcard src/*.m)
+OBJS = $(patsubst src/%.m,build/%.o,$(SRCS))
+
+build/libVapour.dylib: $(OBJS)
 	$(CC) \
 	-dynamiclib -install_name @rpath/$(DYLIB_NAME) -compatibility_version 1.0.0 -current_version 1.0.0 \
 	-arch x86_64 -arch arm64 -arch arm64e \
-	build/hook.o build/main.o build/ZKSwizzle.o -o build/libVapour.dylib $(LDFLAGS) -L$(SDKROOT)/usr/lib
+	$(OBJS) -o build/libVapour.dylib $(LDFLAGS) -L$(SDKROOT)/usr/lib
 
 clean:
 	rm -rf build

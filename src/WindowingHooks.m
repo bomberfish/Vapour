@@ -1,3 +1,5 @@
+#include "SkyLight.h"
+#include "TweakOptions.h"
 #import "common.h"
 
 ZKSwizzleInterface(WindowOverride, NSWindow, NSObject);
@@ -28,6 +30,14 @@ void OnWindowOpened(NSWindow *window) {
             ) {
             VPLog(@"Overriding window background color on opened window");
             [window setBackgroundColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:0.875]];
+        }
+
+        if ([[TweakOptions sharedInstance] VapourBlur] > 0.0) {
+            VPLog(@"Applying blur effect to window with radius %f", [[TweakOptions sharedInstance] VapourBlur]);
+            CGError error = SLSSetWindowBackgroundBlurRadius(CGSMainConnectionID(), (uint32_t)[window windowNumber], [[TweakOptions sharedInstance] VapourBlur]);
+            if (error != kCGErrorSuccess) {
+                VPLog(@"Failed to set window background blur radius: %d", error);
+            }
         }
     }
     return;
