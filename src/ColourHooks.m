@@ -4,7 +4,6 @@ ZKSwizzleInterface(ColourOverride, NSColor, NSObject);
 
 #define ApplyColor(r,g,b,a) \
 if ([[TweakOptions sharedInstance] VapourOverrideColours] && [[TweakOptions sharedInstance] VapourEnabled]) { \
-    VPLog(@"Overriding color"); \
     return [NSColor colorWithRed:r green:g blue:b alpha:a]; \
 } else { \
     return _orig(NSColor *); \

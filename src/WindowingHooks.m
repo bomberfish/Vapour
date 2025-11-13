@@ -1,6 +1,7 @@
 #include "SkyLight.h"
 #include "TweakOptions.h"
 #import "common.h"
+#include <AppKit/AppKit.h>
 #include <sys/types.h>
 #include <stdint.h>
 
@@ -9,6 +10,8 @@ ZKSwizzleInterface(WindowOverride, NSWindow, NSObject);
 void OnWindowOpened(NSWindow *window) {
     if ([[TweakOptions sharedInstance] VapourEnabled]) {
         CGFloat opacity = [[TweakOptions sharedInstance] VapourOpacity];
+        VPLog (@"Window %d opened with level %d", (int)[window windowNumber], (int)[window level]);
+
         VPLog(@"Setting window opacity to %f", opacity);
         [window setAlphaValue:opacity];
 
@@ -27,7 +30,10 @@ void OnWindowOpened(NSWindow *window) {
                     [window level] != kCGDesktopIconWindowLevel &&
                     [window level] != kCGMinimumWindowLevel &&
                     [window level] != kCGStatusWindowLevel &&
-                    [window level] != kCGDockWindowLevel
+                    [window level] != kCGDockWindowLevel &&
+                    [window level] != kCGFloatingWindowLevel &&
+                    [window level] != NSFloatingWindowLevel &&
+                    [window level] != NSTornOffMenuWindowLevel
                 )
             ) {
             VPLog(@"Overriding window background color on opened window");
@@ -89,9 +95,16 @@ void OnWindowOpened(NSWindow *window) {
 }
 - (void)setAlphaValue:(CGFloat)alphaValue {
     if ([[TweakOptions sharedInstance] VapourEnabled]) {
+            if ([self level] != kCGDesktopIconWindowLevel && 
+                [self level] != NSFloatingWindowLevel &&
+                [self level] != NSTornOffMenuWindowLevel) {
             CGFloat opacity = [[TweakOptions sharedInstance] VapourOpacity];
             VPLog(@"Setting window opacity to %f", opacity);
             _orig(void, opacity);
+        } else {
+            VPLog(@"Not modifying alpha value for window level %d", (int)[self level]);
+            _orig(void, alphaValue);
+        }
     } else {
             _orig(void, alphaValue);
     }
