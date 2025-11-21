@@ -195,3 +195,4 @@ qbittorrent
 qBittorrent
 org.qbittorrent.qBittorrent
 com.apple.appkit.xpc.openAndSavePanelService
+CursorUIViewService

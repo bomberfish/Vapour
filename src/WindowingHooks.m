@@ -1,19 +1,46 @@
 #include "SkyLight.h"
 #include "TweakOptions.h"
 #import "common.h"
+#include <AppKit/NSWindow.h>
 #include <AppKit/AppKit.h>
 #include <sys/types.h>
 #include <stdint.h>
+
+static BOOL VapourIsForbiddenWindowLevel(NSWindowLevel level) {
+    NSWindowLevel levels[] = {
+        kCGTornOffMenuWindowLevel,
+        kCGScreenSaverWindowLevel,
+        kCGModalPanelWindowLevel,
+        kCGDesktopIconWindowLevel,
+        kCGMinimumWindowLevel,
+        kCGStatusWindowLevel,
+        kCGDockWindowLevel,
+        kCGFloatingWindowLevel,
+        NSTornOffMenuWindowLevel,
+        NSScreenSaverWindowLevel,
+        NSModalPanelWindowLevel,
+        NSStatusWindowLevel,
+        NSFloatingWindowLevel,
+        NSMainMenuWindowLevel,
+    };
+    size_t cnt = sizeof(levels)/sizeof(levels[0]);
+    for (size_t i = 0; i < cnt; ++i) {
+        if (levels[i] == level) return YES;
+    }
+    return NO;
+}
 
 ZKSwizzleInterface(WindowOverride, NSWindow, NSObject);
 
 void OnWindowOpened(NSWindow *window) {
     if ([[TweakOptions sharedInstance] VapourEnabled]) {
         CGFloat opacity = [[TweakOptions sharedInstance] VapourOpacity];
-        VPLog (@"Window %d opened with level %d", (int)[window windowNumber], (int)[window level]);
+        VPLog (@"Window %d opened with level %d and style mask %lu", (int)[window windowNumber], (int)[window level], (unsigned long)[window styleMask]);
 
         VPLog(@"Setting window opacity to %f", opacity);
         [window setAlphaValue:opacity];
+
+        VPLog(@"executable's at %@", [[NSBundle mainBundle] executablePath]);
 
         // the code formatting of doom and despair 
         if (
@@ -23,18 +50,7 @@ void OnWindowOpened(NSWindow *window) {
                     [window backgroundColor] == nil ||
                     [[window backgroundColor] alphaComponent] == 1.0
                 )
-                && (
-                    [window level] != kCGTornOffMenuWindowLevel &&
-                    [window level] != kCGScreenSaverWindowLevel &&
-                    [window level] != kCGModalPanelWindowLevel &&
-                    [window level] != kCGDesktopIconWindowLevel &&
-                    [window level] != kCGMinimumWindowLevel &&
-                    [window level] != kCGStatusWindowLevel &&
-                    [window level] != kCGDockWindowLevel &&
-                    [window level] != kCGFloatingWindowLevel &&
-                    [window level] != NSFloatingWindowLevel &&
-                    [window level] != NSTornOffMenuWindowLevel
-                )
+                && ([window respondsToSelector:@selector(level)] ? !VapourIsForbiddenWindowLevel([window level]) : YES)
             ) {
             VPLog(@"Overriding window background color on opened window");
             [window setBackgroundColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:0.875]];
@@ -56,7 +72,6 @@ void OnWindowOpened(NSWindow *window) {
     }
     return;
 }
-
 
 @implementation WindowOverride
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)style backing:(NSBackingStoreType)backingStoreType defer:(BOOL)flag {
@@ -95,14 +110,13 @@ void OnWindowOpened(NSWindow *window) {
 }
 - (void)setAlphaValue:(CGFloat)alphaValue {
     if ([[TweakOptions sharedInstance] VapourEnabled]) {
-            if ([self level] != kCGDesktopIconWindowLevel && 
-                [self level] != NSFloatingWindowLevel &&
-                [self level] != NSTornOffMenuWindowLevel) {
+            NSWindow* selfWindow = (NSWindow *)self;
+            if (!VapourIsForbiddenWindowLevel([selfWindow level]) &&  [selfWindow styleMask] != NSWindowStyleMaskBorderless) {
             CGFloat opacity = [[TweakOptions sharedInstance] VapourOpacity];
             VPLog(@"Setting window opacity to %f", opacity);
             _orig(void, opacity);
         } else {
-            VPLog(@"Not modifying alpha value for window level %d", (int)[self level]);
+            VPLog(@"Not modifying alpha value for window level %d", (int)[selfWindow level]);
             _orig(void, alphaValue);
         }
     } else {
